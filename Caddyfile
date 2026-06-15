@@ -1,0 +1,22 @@
+{
+	admin off
+	persist_config off
+	auto_https off
+}
+
+:{$PORT:80} {
+	# Serve the compiled Vite output, NOT the project root.
+	root * dist
+	encode gzip
+
+	# Long-cache fingerprinted assets (immutable filenames).
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=31536000, immutable"
+
+	# index.html must never be cached so new deploys are picked up.
+	header /index.html Cache-Control "no-cache"
+
+	# SPA fallback: unknown paths return index.html for client-side routing.
+	try_files {path} /index.html
+	file_server
+}

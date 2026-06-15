@@ -1,0 +1,20 @@
+# Build the Vite SPA and serve the static dist/ folder with Caddy.
+#
+# Without this, Nixpacks auto-detection served the project root, so the
+# browser received the SOURCE index.html (which references /src/main.tsx)
+# instead of dist/index.html, causing:
+#   "Failed to load module script: ... MIME type of ''".
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "caddy"]
+
+[phases.install]
+dependsOn = ["setup"]
+cmds = ["npm ci"]
+
+[phases.build]
+dependsOn = ["install"]
+cmds = ["npm run build"]
+
+[start]
+cmd = "caddy run --config Caddyfile --adapter caddyfile 2>&1"
