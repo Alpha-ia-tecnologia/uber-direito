@@ -4,6 +4,9 @@
   "version": "1.0.0-mvp",
   "type": "module",
   "description": "MVP frontend (dados mockados) da plataforma Uber dos Advogados — marketplace de mentoria jurídica.",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
