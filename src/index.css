@@ -1,0 +1,303 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Uber dos Advogados — Design System
+   Register: product (app UI serving a legal-mentorship workflow)
+   Strategy: COMMITTED — deep institutional navy carries the structural chrome
+   (nav, footer, hero), bordô (oxblood) is the deliberate accent for seals,
+   credibility and primary actions. Surfaces stay near-pure so the brand color
+   does the work — not a warm-cream body bg.
+   Color space: OKLCH throughout.
+   ========================================================================== */
+
+@theme {
+  /* ---- Brand: navy (primary) ------------------------------------------ */
+  --color-navy-50: oklch(0.972 0.012 255);
+  --color-navy-100: oklch(0.936 0.024 256);
+  --color-navy-200: oklch(0.872 0.042 257);
+  --color-navy-300: oklch(0.772 0.062 258);
+  --color-navy-400: oklch(0.624 0.078 259);
+  --color-navy-500: oklch(0.486 0.082 260);
+  --color-navy-600: oklch(0.396 0.078 261);
+  --color-navy-700: oklch(0.322 0.068 262);
+  --color-navy-800: oklch(0.262 0.054 263);
+  --color-navy-900: oklch(0.214 0.040 264);
+  --color-navy-950: oklch(0.168 0.030 265);
+
+  /* ---- Brand: bordô / oxblood (accent, seed hue 27°) ------------------ */
+  --color-bordo-50: oklch(0.968 0.014 22);
+  --color-bordo-100: oklch(0.930 0.030 22);
+  --color-bordo-200: oklch(0.866 0.058 23);
+  --color-bordo-300: oklch(0.772 0.098 24);
+  --color-bordo-400: oklch(0.640 0.140 25);
+  --color-bordo-500: oklch(0.532 0.158 26);
+  --color-bordo-600: oklch(0.464 0.158 26);
+  --color-bordo-700: oklch(0.402 0.140 25);
+  --color-bordo-800: oklch(0.342 0.110 24);
+  --color-bordo-900: oklch(0.292 0.084 23);
+
+  /* ---- Brass: restrained metallic for seals only (used sparingly) ----- */
+  --color-brass-300: oklch(0.820 0.090 84);
+  --color-brass-400: oklch(0.748 0.108 82);
+  --color-brass-500: oklch(0.684 0.112 80);
+  --color-brass-600: oklch(0.598 0.100 78);
+
+  /* ---- Semantic neutrals (cool ink ramp) ------------------------------ */
+  --color-bg: oklch(0.984 0.004 258);
+  --color-surface: oklch(1 0 0);
+  --color-surface-2: oklch(0.974 0.005 258);
+  --color-line: oklch(0.912 0.008 260);
+  --color-line-strong: oklch(0.852 0.012 261);
+  --color-ink: oklch(0.234 0.026 263);
+  --color-ink-soft: oklch(0.372 0.026 263);
+  --color-muted: oklch(0.508 0.020 263);
+  --color-faint: oklch(0.556 0.018 263);
+
+  /* ---- Status ---------------------------------------------------------- */
+  --color-success: oklch(0.524 0.108 158);
+  --color-success-soft: oklch(0.952 0.030 158);
+  --color-success-ink: oklch(0.382 0.090 158);
+  --color-warning: oklch(0.706 0.132 74);
+  --color-warning-soft: oklch(0.962 0.040 78);
+  --color-warning-ink: oklch(0.486 0.108 64);
+  --color-danger: oklch(0.556 0.196 27);
+  --color-danger-soft: oklch(0.958 0.026 24);
+  --color-danger-ink: oklch(0.452 0.176 27);
+  --color-info: oklch(0.546 0.108 248);
+  --color-info-soft: oklch(0.956 0.022 248);
+  --color-info-ink: oklch(0.420 0.098 252);
+
+  /* ---- Aliases used as primary/accent ---------------------------------- */
+  --color-primary: var(--color-navy-700);
+  --color-primary-hover: var(--color-navy-800);
+  --color-accent: var(--color-bordo-600);
+  --color-accent-hover: var(--color-bordo-700);
+
+  /* ---- Typography ------------------------------------------------------ */
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Spectral", ui-serif, Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* ---- Radii ----------------------------------------------------------- */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.375rem;
+
+  /* ---- Elevation (cool-tinted, low and crisp; layered contact + ambient) */
+  --shadow-xs: 0 1px 1px oklch(0.214 0.040 264 / 0.05), 0 1px 3px oklch(0.214 0.040 264 / 0.04);
+  --shadow-sm: 0 1px 2px oklch(0.214 0.040 264 / 0.06), 0 3px 8px oklch(0.214 0.040 264 / 0.05);
+  --shadow-md: 0 1px 2px oklch(0.214 0.040 264 / 0.05), 0 6px 16px oklch(0.214 0.040 264 / 0.08), 0 2px 6px oklch(0.214 0.040 264 / 0.04);
+  --shadow-lg: 0 2px 4px oklch(0.214 0.040 264 / 0.05), 0 16px 40px oklch(0.214 0.040 264 / 0.14), 0 6px 12px oklch(0.214 0.040 264 / 0.07);
+  --shadow-glow: 0 0 0 1px oklch(0.464 0.158 26 / 0.18), 0 10px 30px oklch(0.464 0.158 26 / 0.16);
+
+  /* ---- Semantic z-index scale ------------------------------------------ */
+  --z-base: 1;
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* ---- Motion ---------------------------------------------------------- */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--color-line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* a11y font scaling hook (RF-48): root size is multiplied by --a11y-scale */
+    font-size: calc(100% * var(--a11y-scale, 1));
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv05" 1, "ss01" 1;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    color: var(--color-navy-900);
+    text-wrap: balance;
+    letter-spacing: -0.014em;
+    line-height: 1.1;
+    font-weight: 600;
+    font-optical-sizing: auto;
+    font-feature-settings: "liga" 1, "calt" 1, "lnum" 1;
+  }
+  /* Large display headings earn slightly tighter tracking; small headings relax it. */
+  h1 { letter-spacing: -0.02em; }
+  h4 { letter-spacing: -0.008em; }
+
+  p { text-wrap: pretty; }
+
+  :focus-visible {
+    outline: 2px solid var(--color-bordo-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: oklch(0.464 0.158 26 / 0.16);
+    color: var(--color-navy-900);
+  }
+
+  /* Custom scrollbar — discreet, institutional */
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line-strong);
+    border-radius: 99px;
+    border: 3px solid var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-navy-300); }
+}
+
+/* ==========================================================================
+   Accessibility theme (RF-48): high-contrast mode toggled via [data-contrast]
+   ========================================================================== */
+[data-contrast="high"] {
+  --color-bg: oklch(1 0 0);
+  --color-surface: oklch(1 0 0);
+  --color-surface-2: oklch(0.97 0 0);
+  --color-line: oklch(0.62 0 0);
+  --color-line-strong: oklch(0.45 0 0);
+  --color-ink: oklch(0.13 0 0);
+  --color-ink-soft: oklch(0.20 0 0);
+  --color-muted: oklch(0.30 0 0);
+  --color-faint: oklch(0.38 0 0);
+  --color-primary: oklch(0.22 0.05 264);
+  --color-accent: oklch(0.38 0.16 26);
+}
+[data-contrast="high"] * { border-color: var(--color-line-strong) !important; }
+[data-contrast="high"] a { text-decoration: underline; }
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+@layer utilities {
+  .font-serif { font-family: var(--font-serif); }
+  .font-mono { font-family: var(--font-mono); }
+
+  /* Deep-navy chrome — "chambers at dusk": navy glow top-left, faint oxblood
+     warmth top-right, a touch deeper toward the foot for material depth. */
+  .bg-navy-chrome {
+    background-color: var(--color-navy-900);
+    background-image:
+      linear-gradient(176deg, oklch(0.244 0.048 263 / 0.55), transparent 26%, oklch(0.164 0.030 265 / 0.55)),
+      radial-gradient(1000px 460px at 6% -16%, oklch(0.396 0.078 261 / 0.50), transparent 62%),
+      radial-gradient(760px 520px at 114% -10%, oklch(0.342 0.110 24 / 0.20), transparent 56%);
+  }
+
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+
+  .ring-focus {
+    box-shadow: 0 0 0 3px oklch(0.464 0.158 26 / 0.22);
+  }
+
+  /* Institutional signature: a short oxblood rule used as a quiet section mark. */
+  .rule-accent::before {
+    content: "";
+    display: block;
+    width: 2.25rem;
+    height: 2px;
+    border-radius: 99px;
+    background: var(--color-bordo-500);
+    margin-bottom: 0.85rem;
+  }
+
+  /* Hairline divider that reads on both light and navy surfaces */
+  .hairline { border-bottom: 1px solid var(--color-line); }
+
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: var(--z-tooltip);
+  }
+  .skip-link:focus {
+    left: 1rem;
+    top: 1rem;
+    padding: 0.6rem 1rem;
+    background: var(--color-navy-900);
+    color: white;
+    border-radius: var(--radius-md);
+  }
+}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+@keyframes shimmer {
+  100% { background-position: -200% 0; }
+}
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+.animate-fade-up { animation: fade-up 0.5s var(--ease-out-quart) both; }
+.animate-fade-in { animation: fade-in 0.4s var(--ease-out-quart) both; }
+.animate-scale-in { animation: scale-in 0.32s var(--ease-out-expo) both; }
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-2) 25%,
+    var(--color-line) 37%,
+    var(--color-surface-2) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
