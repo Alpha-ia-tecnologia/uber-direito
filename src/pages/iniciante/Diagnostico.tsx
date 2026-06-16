@@ -11,6 +11,8 @@ import {
   ArrowRight,
   RotateCcw,
   Scale,
+  UploadCloud,
+  X,
 } from "lucide-react";
 import { useApp } from "@/store/app-context";
 import { PageHeader } from "@/components/PageHeader";
@@ -24,6 +26,7 @@ import { cn } from "@/lib/utils";
 import type { LegalArea, SupportType, Urgency } from "@/data/types";
 
 type Msg = { id: number; from: "ai" | "user"; text: string };
+type AttachedFile = { id: number; name: string; size: number };
 
 const areas: LegalArea[] = [
   "Direito do Trabalho",
@@ -302,6 +305,19 @@ function GeneratedReport({ answers, confirmed, onConfirm, onPublish, onRestart }
   const docs = ["Documentos de identificação das partes", "Contratos ou comprovantes relacionados", "Mensagens, e-mails ou provas do alegado", "Comprovantes de datas e valores"];
   const risks = ["Confirmar prazos e eventual prescrição.", "Reunir provas antes de qualquer medida.", "Avaliar tentativa de acordo conforme o caso."];
 
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fileIdRef = useRef(0);
+  const [files, setFiles] = useState<AttachedFile[]>([]);
+  const [dragging, setDragging] = useState(false);
+
+  function addFiles(list: FileList | null) {
+    if (!list?.length) return;
+    setFiles((prev) => [...prev, ...Array.from(list).map((f) => ({ id: ++fileIdRef.current, name: f.name, size: f.size }))]);
+  }
+  function removeFile(id: number) {
+    setFiles((prev) => prev.filter((f) => f.id !== id));
+  }
+
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
       <Card elevated>
@@ -339,6 +355,72 @@ function GeneratedReport({ answers, confirmed, onConfirm, onPublish, onRestart }
               <ul className="space-y-1.5">{risks.map((r) => <li key={r} className="flex gap-2 text-[0.86rem] text-ink-soft"><ShieldAlert className="mt-0.5 size-4 shrink-0 text-warning" />{r}</li>)}</ul>
             </Section>
           </div>
+
+          {/* Optional: attach complementary documents */}
+          <div>
+            <div className="mb-2 flex items-center gap-2">
+              <h4 className="text-[0.74rem] font-semibold uppercase tracking-wide text-faint">Documentos complementares</h4>
+              <span className="rounded-full bg-navy-50 px-2 py-0.5 text-[0.64rem] font-semibold uppercase tracking-wide text-navy-500">Opcional</span>
+              {files.length > 0 && (
+                <span className="ml-auto text-[0.76rem] text-muted">{files.length} {files.length === 1 ? "anexo" : "anexos"}</span>
+              )}
+            </div>
+            <p className="mb-3 text-[0.83rem] leading-relaxed text-ink-soft">
+              Se já tiver algum dos documentos sugeridos, anexe agora para agilizar o atendimento. Você também pode enviá-los depois, junto ao advogado responsável.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={(e) => { e.preventDefault(); setDragging(false); addFiles(e.dataTransfer.files); }}
+              className={cn(
+                "group flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-7 text-center transition-colors",
+                dragging ? "border-navy-500 bg-navy-50" : "border-line-strong bg-surface-2/40 hover:border-navy-400 hover:bg-navy-50/60",
+              )}
+            >
+              <span className="grid size-10 place-items-center rounded-full bg-navy-50 text-navy-600 transition-colors group-hover:bg-navy-100"><UploadCloud className="size-5" /></span>
+              <span className="text-[0.86rem] font-medium text-navy-900">Arraste arquivos aqui ou <span className="text-navy-600 underline-offset-2 group-hover:underline">clique para enviar</span></span>
+              <span className="text-[0.74rem] text-faint">PDF, JPG, PNG ou DOC · até 10 MB por arquivo</span>
+            </button>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+              className="hidden"
+              onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }}
+            />
+
+            <AnimatePresence initial={false}>
+              {files.length > 0 && (
+                <motion.ul initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 space-y-2">
+                  {files.map((f) => (
+                    <motion.li
+                      key={f.id}
+                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.2 }}
+                      className="flex items-center gap-3 rounded-lg border border-line bg-surface px-3 py-2.5"
+                    >
+                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-navy-50 text-navy-600"><FileText className="size-4.5" /></span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[0.85rem] font-medium text-navy-900">{f.name}</p>
+                        <p className="text-[0.74rem] text-muted">{formatBytes(f.size)}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(f.id)}
+                        aria-label={`Remover ${f.name}`}
+                        className="grid size-8 shrink-0 place-items-center rounded-md text-faint transition-colors hover:bg-bordo-50 hover:text-bordo-600"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </motion.li>
+                  ))}
+                </motion.ul>
+              )}
+            </AnimatePresence>
+          </div>
         </CardBody>
         <div className="flex flex-wrap items-center gap-3 border-t border-line bg-surface-2/50 px-6 py-4">
           <Button variant="ghost" iconLeft={<RotateCcw className="size-4" />} onClick={onRestart}>Refazer</Button>
@@ -354,6 +436,12 @@ function GeneratedReport({ answers, confirmed, onConfirm, onPublish, onRestart }
       <p className="mt-3 flex items-center justify-center gap-1.5 text-[0.78rem] text-faint"><Scale className="size-3.5" /> O caso será conduzido por um advogado humano.</p>
     </motion.div>
   );
+}
+
+function formatBytes(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
