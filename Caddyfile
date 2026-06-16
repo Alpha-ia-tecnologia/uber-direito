@@ -4,19 +4,26 @@
 	auto_https off
 }
 
-:{$PORT:80} {
+# Bind to $PORT if EasyPanel injects it, else 3000 — Nixpacks' default port,
+# which is the port the platform proxy was already reaching. 3000 is also
+# unprivileged, so it works whether or not the container runs as root.
+:{$PORT:3000} {
 	# Serve the compiled Vite output, NOT the project root.
-	root * dist
+	root * /app/dist
 	encode gzip
 
-	# Long-cache fingerprinted assets (immutable filenames).
-	@assets path /assets/*
-	header @assets Cache-Control "public, max-age=31536000, immutable"
+	# Fingerprinted build assets: cache forever. A missing chunk must 404 here
+	# (no SPA fallback), so the browser never receives index.html as JavaScript.
+	handle /assets/* {
+		header Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
 
-	# index.html must never be cached so new deploys are picked up.
-	header /index.html Cache-Control "no-cache"
-
-	# SPA fallback: unknown paths return index.html for client-side routing.
-	try_files {path} /index.html
-	file_server
+	# Everything else is the SPA shell: never cache index.html (so new deploys
+	# are picked up), and route unknown paths to index.html for the client router.
+	handle {
+		header Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
 }

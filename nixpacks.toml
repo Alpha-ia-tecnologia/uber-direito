@@ -1,12 +1,21 @@
-# Build the Vite SPA and serve the static dist/ folder with Caddy.
+# Build the Vite SPA and serve the compiled dist/ folder with Caddy.
 #
-# Without this, Nixpacks auto-detection served the project root, so the
-# browser received the SOURCE index.html (which references /src/main.tsx)
-# instead of dist/index.html, causing:
-#   "Failed to load module script: ... MIME type of ''".
+# Do NOT list "caddy" in [phases.setup]. Nixpacks' Node SPA provider
+# auto-detects this app (vite + react) and injects its OWN caddy phase,
+# pinned to a different nixpkgs archive (caddy 2.8.4). Declaring caddy here
+# too pulls a second caddy (2.10.2); nix-env cannot place two versions of
+# the same package in one profile and aborts with a file conflict on
+# lib/systemd/system/caddy-api.service (exit 100). Letting the auto-phase be
+# the SOLE caddy source removes the conflict while still putting the caddy
+# binary on PATH for [start].
+#
+# History (do not regress):
+#  - Node must be >=20 for @tailwindcss/oxide native binding (Node 18 failed).
+#  - Caddy must serve dist/, not the project root, or the browser gets the
+#    source index.html (/src/main.tsx) -> "MIME type ''" module error.
 
 [phases.setup]
-nixPkgs = ["nodejs_20", "caddy"]
+nixPkgs = ["nodejs_20"]
 
 [phases.install]
 dependsOn = ["setup"]
@@ -16,5 +25,8 @@ cmds = ["npm ci"]
 dependsOn = ["install"]
 cmds = ["npm run build"]
 
+# Our [start] overrides the auto-generated one (file plan wins on merge), so
+# OUR /app/Caddyfile (serving dist/) is used instead of the generated
+# /assets/Caddyfile. The auto-caddy phase is still what installs the binary.
 [start]
-cmd = "caddy run --config Caddyfile --adapter caddyfile 2>&1"
+cmd = "caddy run --config /app/Caddyfile --adapter caddyfile 2>&1"
